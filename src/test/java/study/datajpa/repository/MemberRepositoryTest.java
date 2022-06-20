@@ -12,6 +12,7 @@ import study.datajpa.entity.Team;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -146,6 +147,42 @@ class MemberRepositoryTest {
         for (MemberDto dto : memberDto) {
             System.out.println("dto = " + dto);
         }
+    }
+
+    @Test
+    void findByNames() {
+
+        Team teamA = new Team("TeamA");
+        teamRepository.save(teamA);
+
+        Member m1 = new Member("AAA", 10, teamA);
+        Member m2 = new Member("BBB", 10, teamA);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
+
+        for (Member member : result) {
+            System.out.println("member = " + member);
+        }
+    }
+
+    @Test
+    void returnTypeTest() {
+
+        Team teamA = new Team("TeamA");
+        teamRepository.save(teamA);
+
+        Member m1 = new Member("AAA", 10, teamA);
+        Member m2 = new Member("BBB", 10, teamA);
+        Member m3 = new Member("BBB", 10, teamA);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+        memberRepository.save(m3);
+
+        Member findMember1 = memberRepository.findMemberByUsername("AAA");
+        List<Member> findMember2 = memberRepository.findListByUsername("BBB");
+        Optional<Member> findMember3 = memberRepository.findOptionalByUsername("AAA");
 
     }
 }
