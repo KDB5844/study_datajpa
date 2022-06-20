@@ -81,4 +81,18 @@ class MemberJpaRepositoryTest {
         assertThat(result.size()).isEqualTo(1);
 
     }
+
+    @Test
+    void paging() {
+        memberJpaRepository.save(new Member("김덕배", 10));
+        memberJpaRepository.save(new Member("최덕배", 10));
+        memberJpaRepository.save(new Member("하덕배", 10));
+        memberJpaRepository.save(new Member("박덕배", 10));
+
+        List<Member> result = memberJpaRepository.findByPage(10, 0, 3);
+        long totalCnt = memberJpaRepository.totalCount(10);
+        System.out.println("totalCnt = " + totalCnt);
+        result.stream().forEach(System.out::println);
+
+    }
 }
