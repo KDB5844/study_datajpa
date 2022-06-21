@@ -215,4 +215,53 @@ class MemberRepositoryTest {
         assertThat(page.isFirst()).isTrue();
         assertThat(page.hasNext()).isTrue();
     }
+
+    @Test
+    void bulkUpdate() {
+        // given
+        memberRepository.save(new Member("김덕배", 10));
+        memberRepository.save(new Member("최덕배", 20));
+        memberRepository.save(new Member("하덕배", 30));
+        memberRepository.save(new Member("박덕배", 40));
+
+        // when
+        int updateCnt = memberRepository.bulkAgePlus(20);
+
+        // 벌크 연산 이후에는 영속성 컨텍스트를 날려야 한다.
+        // 벌크 연산은 영속성 컨텍스를 거쳐서 DB에 가는게 아니라 DB에 다이렉트로 SQL를 던지기 때문에
+        // 추후 코드에 문제가 있을 수 있음 밑에서 Member 의 정보를 가져와도 1차 캐시 데이터와 DB내의 데이터가 다름
+        em.flush();
+        em.clear();
+        // then
+        assertThat(updateCnt).isEqualTo(3);
+    }
+
+    @Test
+    void findMemberLazy() {
+        // given
+        // member1 -> TeamA
+        // member2 -> TeamB
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        List<Member> members = memberRepository.findMemberFetchJoin();
+
+        for (Member member : members) {
+            System.out.println("member = " + member.getTeam());
+        }
+
+        // then
+    }
 }

@@ -24,6 +24,12 @@ class MemberJpaRepositoryTest {
     @Autowired
     MemberJpaRepository memberJpaRepository;
 
+    @Autowired
+    TeamJpaRepository teamJpaRepository;
+
+    @PersistenceContext
+    EntityManager em;
+
     @Test
     void save() {
         Member member = new Member("user1");
@@ -95,4 +101,20 @@ class MemberJpaRepositoryTest {
         result.stream().forEach(System.out::println);
 
     }
+
+    @Test
+    void bulkUpdate() {
+        // given
+        memberJpaRepository.save(new Member("김덕배", 11));
+        memberJpaRepository.save(new Member("최덕배", 11));
+        memberJpaRepository.save(new Member("하덕배", 10));
+        memberJpaRepository.save(new Member("박덕배", 13));
+
+        //when
+        int count = memberJpaRepository.bulkAgePlus(11);
+
+        //then
+        assertThat(count).isEqualTo(3);
+    }
+
 }
