@@ -264,4 +264,34 @@ class MemberRepositoryTest {
 
         // then
     }
+
+    @Test
+    void queryHint() {
+        // given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        // when
+        // 더티체킹 안됨
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        System.out.println("member1 == findMember = " + (member1 == findMember));
+        
+        em.flush();
+    }
+
+    @Test
+    void rock() {
+        // given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        // when
+        List<Member> findMember = memberRepository.findLockByUsername("member1");
+    }
 }
